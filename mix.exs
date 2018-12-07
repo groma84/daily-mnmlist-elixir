@@ -42,8 +42,7 @@ defmodule DailyMnmlist.MixProject do
       {:distillery, "~> 2.0"},
       # HTML Parsing - https://github.com/philss/floki
       {:floki, "~> 0.20.0"},
-      # Mnesia Wrapper - https://github.com/meh/amnesia
-      {:amnesia, "~> 0.2.7"}
+
     ]
   end
 end
