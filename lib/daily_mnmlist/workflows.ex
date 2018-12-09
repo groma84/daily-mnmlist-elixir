@@ -1,8 +1,25 @@
 defmodule DailyMnmlist.Workflows do
+  require Logger
+
+  @table_name :links
+  @url 'http://mnmlist.com/archives/'
+
   @type link() :: {String.t(), String.t()}
 
-  defp download_mnmlist() do
-    download_page('http://mnmlist.com/archives/')
+  @spec get_data_for_today(NaiveDateTime.t()) :: {Date, link()}
+  def get_data_for_today(today) do
+    create_datastore_if_not_exists(@table_name)
+
+    case retrieve_data_for_today(today, @table_name) do
+      {:not_found, _} ->
+        Logger.info("getting fresh data")
+        get_fresh_data_and_insert_into_datastore(today, @table_name, @url)
+        get_data_for_today(today)
+
+      {:ok, link} ->
+        Logger.info("returning already cached data")
+        link
+    end
   end
 
   defp download_page(url) do
@@ -32,31 +49,23 @@ defmodule DailyMnmlist.Workflows do
     |> Enum.zip(links)
   end
 
-  def get_data_for_today(today) do
-    case :ets.info(:links) do
-      :undefined ->
-        get_fresh_data_and_insert_into_datastore(today)
-        retrieve_data_for_today(today)
-
-      _ ->
-        retrieve_data_for_today(today)
+  defp retrieve_data_for_today(date, table_name) do
+    case :ets.lookup(table_name, NaiveDateTime.to_date(date)) do
+      [] -> {:not_found, []}
+      [link] -> {:ok, link}
     end
   end
 
-  defp retrieve_data_for_today(date) do
-    :ets.lookup(:links, NaiveDateTime.to_date(date))
-  end
-
-  defp get_fresh_data_and_insert_into_datastore(date) do
-    download_mnmlist()
+  defp get_fresh_data_and_insert_into_datastore(date, table_name, from_url) do
+    download_page(from_url)
     |> parse_html()
     |> randomize_links()
     |> combine_links_with_dates(date)
-    |> insert_into_datastore()
+    |> insert_into_datastore(table_name)
   end
 
   defp extract_data(node) do
-    href = Floki.attribute(node, "href")
+    [href] = Floki.attribute(node, "href")
     text = Floki.text(node) |> remove_unwanted_chars
 
     {href, text}
@@ -76,10 +85,20 @@ defmodule DailyMnmlist.Workflows do
     end
   end
 
-  defp insert_into_datastore(links) do
-    :ets.new(:links, [:named_table])
+  defp create_datastore_if_not_exists(table_name) do
+    case :ets.info(table_name) do
+      :undefined ->
+        Logger.info("created datastore with table #{table_name}")
+        :ets.new(table_name, [:named_table])
+        :ok
 
+      _ ->
+        :ok
+    end
+  end
+
+  defp insert_into_datastore(links, table_name) do
     links
-    |> Enum.each(&:ets.insert(:links, &1))
+    |> Enum.each(&:ets.insert(table_name, &1))
   end
 end
