@@ -17,7 +17,7 @@ config :daily_mnmlist, DailyMnmlistWeb.Endpoint,
   # Without this line, your app will not start the web server!
   server: true,
   secret_key_base: "${SECRET_KEY_BASE}",
-  url: [host: "mnmlist.finde-ich-super.de", port: {:system, "PORT"}],
+  url: [host: "mnmlist.finde-ich-super.de", port: 80],
   cache_static_manifest: "priv/static/cache_manifest.json"
 
 # Do not print debug messages in production
@@ -75,4 +75,4 @@ config :phoenix, :serve_endpoints, true
 
 # Finally import the config/prod.secret.exs which should be versioned
 # separately.
-import_config "prod.secret.exs"
+# import_config "prod.secret.exs"
