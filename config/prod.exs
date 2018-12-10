@@ -13,11 +13,12 @@ use Mix.Config
 config :daily_mnmlist, DailyMnmlistWeb.Endpoint,
   load_from_system_env: true,
   # Needed for Phoenix 1.2 and 1.4. Doesn't hurt for 1.3.
-  http: [port: {:system, "PORT"}],
+  http: [port: 4001],
   # Without this line, your app will not start the web server!
   server: true,
   secret_key_base: "${SECRET_KEY_BASE}",
-  url: [host: "mnmlist.finde-ich-super.de", port: 80],
+# we get our apache redirect on 443 although phoenix uses http without s
+  url: [host: "mnmlist.finde-ich-super.de", port: 443],
   cache_static_manifest: "priv/static/cache_manifest.json"
 
 # Do not print debug messages in production
