@@ -4,7 +4,7 @@ defmodule DailyMnmlist.MixProject do
   def project do
     [
       app: :daily_mnmlist,
-      version: "0.2.2",
+      version: "0.2.3",
       elixir: "~> 1.5",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
@@ -41,8 +41,7 @@ defmodule DailyMnmlist.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:distillery, "~> 2.0"},
       # HTML Parsing - https://github.com/philss/floki
-      {:floki, "~> 0.20.0"},
-
+      {:floki, "~> 0.20.0"}
     ]
   end
 end

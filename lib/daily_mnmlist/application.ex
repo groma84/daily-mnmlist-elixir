@@ -9,9 +9,10 @@ defmodule DailyMnmlist.Application do
     # List all child processes to be supervised
     children = [
       # Start the endpoint when the application starts
-      DailyMnmlistWeb.Endpoint
+      DailyMnmlistWeb.Endpoint,
       # Starts a worker by calling: DailyMnmlist.Worker.start_link(arg)
       # {DailyMnmlist.Worker, arg},
+      DailyMnmlist.Datastore
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
