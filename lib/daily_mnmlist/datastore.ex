@@ -13,7 +13,7 @@ defmodule DailyMnmlist.Datastore do
   end
 
   def retrieve_data_for_date(date) do
-    GenServer.call(@me, {:retrieve_data_for_date, date})
+    GenServer.call(@me, {:retrieve_data_for_date, date}, 30000)
   end
 
   # Server (callbacks)
@@ -36,7 +36,7 @@ defmodule DailyMnmlist.Datastore do
       {:not_found, _} ->
         Logger.info("getting fresh data")
         get_fresh_data_and_insert_into_datastore(date, table_name, url)
-        load_data_for_date(date, table_name)
+        retrieve_data(date, table_name, url)
 
       {:ok, link} ->
         Logger.info("returning already cached data")
